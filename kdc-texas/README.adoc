@@ -1,0 +1,90 @@
+= Korrel8r Demo for KDC Texas
+
+== Setup
+
+. `make setup`
+. console on bad-config-deployment alert page, should have "related logs"
+. korrel8r goal=logs start=alert:alert:{"alertname":"KubeDeploymentReplicasMismatch","deployment":"bad-config-deployment","namespace":"default"}
+
+== Intro
+
+Korrel8r is an open source tool that correlates data from different stores, with different query languages and different schema.
+It has a REST API so other tools can query for correlation results.
+It also has a simple web UI for development and debugging, we'll start by looking at that.
+
+== Goal directed search
+
+Korrel8r can perform goal directed searches, for example: I have alert, I want to see related container logs stored in Loki.
+
+This query selects an alert, and I have selected "logs" as the goal.
+
+- goal=logs query=alert:alert:{"alertname":"KubeDeploymentReplicasMismatch","deployment":"bad-config-deployment","namespace":"default"}
+
+This graph shows data connected by rules:
+
+. The initial Alert does not contain enough information to automatically find related logs.
+. This rule AlertToDeployment constructs a kubernetes query to get the related deployment resource.
+. The SelectorToPods rule uses the deployment's pod selector labels to find the related pods.
+. The PodToLogs rule constructs a LogQL query using the pod name and namespace.
+. The SelectorToLogs rule also creates a LogQL query, but using the deployment pod selector labels.
+  This can find stored logs for pods that no longer exist.
+. Finally the logs include an ERROR message showing the root cause of the problem  - a missing configuration file.
+
+Now lets look at the query details. We have
+
+- An alert manager query for the original alert, using labels lower-case "domain" and "namespace"
+- Kuberenetes API server queries using the fields "Name", "Namepsace", and "Selector.MatchLabels"
+- LogQL queires using "kuberenetes_namepsace_name", "kuberenetes_pod_name" and "kuberenetes_pod_labels"
+
+Korrel8r rules can define relationships between different domains and translate between different schema and query languages.
+
+== Use as a back end.
+
+This web page is just for development.
+Korel8r is intended to provide data consumed by other tools.
+For example, here's the openshift console showing our alert.
+
+- console alert page ready to go.
+
+This "related logs" button sends a request to korrel8r with the alert.
+
+- click
+
+and uses the response query to display the related logs.
+
+- show the query
+
+Another example, this "Metrics" link console uses korrel8r to go from logs metrics.
+
+- click
+
+showing all the metrics associated with the Pod that created the log record.
+
+== New signal types
+
+Korrel8r can be extended with new domains and rules for example
+NetFlows collects and logs data about IP network traffic.
+
+Lets find the netflows related to the openshift logging log collector daemonset:
+
+- k8s:DaemonSet.v1.apps:{"namespace":"openshift-logging","name":"collector"}
+- goal netflow:network
+
+Note that netflows queries use yet another labelling scheme; SrcK8s_Type, SrcK8s_Namespace
+
+== Neighbourhoods
+
+Korrel8r can also search for "neighbourhoods" around a starting point, without a goal.
+Lets try that on the netflows we found:
+
+- focus netflows, neighbourhoods 2
+
+Now we can see resources related to the log collector based on network traffic recorded by NetFlow.
+
+NOTE this is NOT a network diagram, it is a _relationship_ diagram.
+For a network diagrm we can return to the console:
+
+- click
+
+Korrel8r does not replace tools like the console, it extends their reach.
+It provides a central repository of relationships that can be re-used for many automation tasks.
