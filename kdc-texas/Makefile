@@ -1,4 +1,5 @@
+SRC=$(error Set SRC to korrel8r repository directory.)
 setup:
-	make -C  ../../hack/openshift operators resources
+	make -C  $(SRC)/hack/openshift operators resources
 	kubectl apply -f bad-deployment.yaml
-	make -C ../.. deploy
+	make -C $(SRC) deploy
