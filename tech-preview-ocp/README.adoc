@@ -1,0 +1,31 @@
+= OpenShift 4.17 troubleshooting panel
+Powered by Korrel8r.
+
+== Script
+
+This is a demo of the new troubleshooting panel, powered by the Korrel8r signal correlation engine.
+
+Start with the administrator overview, look at an alert.
+Open the alert.
+Click signal correlation on launcher menu to open the panel.
+
+Panel shows a graph of signals and resources associated with the alert.
+
+We see different types of information associated with the alert, click for detail:
+- Pod (resource)
+- Events
+- Logs - most interesting, root cause
+- Metrics
+
+Focus button re-centers, e.g. on Pod.
+
+No need to start from alert, can navigate via console to many resources:
+- focus on korrel8r deployment
+- note network events: show statefulset, what we talk to.
+- note network events details:  sure to show traffic/topology
+
+Summary: Speed up navigation between related console screens, help with troubleshooting and discovery.
+
+TODO:
+- mention time constraints, increase default constraint?
+
