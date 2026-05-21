@@ -1,0 +1,98 @@
+ ▐▛███▜▌   Claude Code v2.1.145
+▝▜█████▛▘  Opus 4.6 with high effort · Google Vertex AI
+  ▘▘ ▝▝    ~/src/troubleshooting-panel-console-plugin
+
+❯ what am I looking at in the console
+
+● Let me check the console state.
+
+● No console is currently connected. To use this feature, you need to have the OpenShift console open
+  with the troubleshooting panel active — that's what provides the connection for me to read what you're
+  viewing.
+
+✻ Churned for 5s
+
+❯ /mcp
+  ⎿  Reconnected to korrel8r.
+
+❯ what am I looking at in the console
+
+● Still getting "not connected to console." The MCP server reconnected to korrel8r, but the console
+  connection isn't established. This typically means the OpenShift console browser tab either isn't open
+  or doesn't have the troubleshooting panel plugin loaded and active.
+
+✻ Brewed for 4s
+
+❯ what am I looking at in the console
+
+● You're looking at two things in the console:
+
+  - Main view: The pod loki-index-gateway-0 in the netobserv namespace.
+  - Troubleshooting panel: A correlation search (depth 3) starting from the alert
+  PodDisruptionBudgetAtLimit (severity: warning) for the loki-ingester PodDisruptionBudget in the
+  netobserv namespace.
+
+  So you're investigating a warning alert about the Loki ingester's PDB being at its disruption limit,
+  while viewing one of the Loki index gateway pods in the Network Observability stack.
+
+✻ Cooked for 5s
+
+❯ what am I looking at in the console
+
+● You're viewing the alert PodDisruptionBudgetAtLimit — a warning-level alert for the loki-ingester
+  PodDisruptionBudget in the netobserv namespace. The troubleshooting panel isn't open this time, just
+✻ Cooked for 5s
+
+❯ what am I looking at in the console
+
+  Called korrel8r (ctrl+o to expand)
+
+● You're viewing the alert PodDisruptionBudgetAtLimit — a warning-level alert for the loki-ingester
+  PodDisruptionBudget in the netobserv namespace. The troubleshooting panel isn't open this time, just
+  the alert detail view.
+
+✻ Churned for 3s
+❯ show me what is related to this alert
+
+  Called korrel8r (ctrl+o to expand)
+
+● Here's what's related to the PodDisruptionBudgetAtLimit alert:
+
+  ┌─────────────────────┬───────┬─────────────────────────────────────────────────────┐
+  │       Signal        │ Count │                       Details                       │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ Metrics             │ 1,062 │ Pod metrics for loki-ingester-0, PDB health metrics │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ Application Logs    │ 1,000 │ Loki ingester logs (272 with Warning status)        │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ Network Flows       │ 1,655 │ Traffic to/from loki-ingester-0 (851 src, 804 dst)  │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ PodDisruptionBudget │ 1     │ loki-ingester in netobserv                          │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ Pod                 │ 1     │ loki-ingester-0                                     │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ StatefulSet         │ 1     │ loki-ingester                                       │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ LokiStack           │ 1     │ loki in netobserv                                   │
+  ├─────────────────────┼───────┼─────────────────────────────────────────────────────┤
+  │ Node                │ 1     │ snoflake                                            │
+  └─────────────────────┴───────┴─────────────────────────────────────────────────────┘
+
+  Notable: 272 of the 1,000 application logs have Warning status, which may be worth investigating. Want
+  me to show any of these in the console, or dig into the logs or metrics?
+
+✻ Cooked for 19s
+
+❯ show me in the console
+
+  Called korrel8r (ctrl+o to expand)
+
+● Done — the troubleshooting panel should now be showing the correlation graph for that alert in your
+  console.
+
+✻ Brewed for 5s
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ 
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+  PR #237

@@ -1,0 +1,105 @@
+=  Korrel8r as an agent-console bridge
+:link-openapi-mcp: shttps://github.com/jedisct1/openapi-mcp
+:link-mcp: https://modelcontextprotocol.io/
+:link-korrel8r: https://korrel8r.github.io/korrel8r/
+:toc: left
+
+Using link:{link-korrel8r}[Korrel8r] as a bridge between AI agents and the Openshift Console.
+
+== What?
+
+- Allow an agent to discover what the user is looking at in the console.
+- Allow an agent to tell the console to display a new page, or a new korrel8r graph.
+
+Example
+
+  User: "What is this alert I'm looking at"
+  Agent: "You are looking at a PodDisruptionBudgetAtLimit alert. This means that blah blah..."
+  User: "Show me resources related to this alert"
+  Agent: "Sure, you should see them in the console now"
+  [console: Agent opens korrel8r panel with graph]
+  [console: User clicks on links in graph and on main view, opens a pod of interest]
+  User: "Why is this pod associated with the alert?"
+  Agent: "This pod appears to blah blah blah..."
+
+== Why?
+
+Agents can already show cluster data in their chat window as text or embedded graphs,
+so why use the console in conjunction with an agent?
+
+- Familiarity: users already know how to navigate and read the console.
+- Trust: agents can hallucinate. Having an agent use the console shows a reliable view of data.
+- Navigation: Sometimes chatting is faster, sometimes clicking and browsing is faster. Allow both.
+- Integration: No clunky "cut and paste" needed to use AI with the console tools.
+
+== How?
+
+Korrel8r acts as an MCP-REST bridge. The AI agent is a client of the MCP side,
+the console is a client of the REST side.
+
+MCP tools for the agent:
+
+- get_console: Returns the current console state (see below)
+- show_in_console: Set the current console state.
+
+REST API for the console:
+
+- GET /console/events - SSE event stream of console state updates from the agent.
+- PUT /console - make current console state available to agents.
+
+The console state is a simple JSON structure including:
+
+- view: Korrel8r query representing the content of the main view (translated from console URL)
+- search: Parameters of the korrel8r search panel, if it is open.
+
+IMPORTANT: The REST and MCP services are tied together by the user's login.
+The console and the agent must both have authorization tokens belonging to the same user.
+
+WARNING: This supports multi-user, but it does not (yet) support multiple sessions for the same user.
+
+=== Why korrel8r?
+
+NOTE: The MCP and REST APIs for console-agent bridge are separate from the rest of the Korrel8r API.
+The bridge _could_ be refactored as a separate service.
+
+This experiment started in Korrel8r because:
+
+- It already had MCP and REST APIs, the console troubleshooting panel was already a client.
+- Korrel8r query and graph syntax is easy for agents to understand and use:
+  - Widely used native query languages (LogQL, TraceQL, PromQL etc.) that are already known to agents.
+  - Graphs are straightforward JSON that agents can understand.
+
+== Getting started
+
+Starting `korrel8r web` (directly or via COO) makes REST and MCP endpoints available.
+If you are logged into a cluster where the COO is installed, you can generate an MCP configuration file like this:
+
+  ./mcp-json.sh > mcp.json
+
+. The configuration file will look something like this:
+  {
+    "mcpServers": {
+      "korrel8r": {
+        "type": "http",
+        "url": "https://korrel8r-openshift-cluster-observability-operator.apps.snoflake.home/mcp",
+        "headers": {
+          "Authorization": "Bearer xxxxxxxxxxx"
+        }
+      }
+    }
+  }
+
+NOTE: Korrel8r only connects a console and an agent where both have bearer tokens belonging to the same user.
+Korrel8r uses `tokenreview` to compare user-id, so the tokens don't have to be identical but must have the same owner.
+
+WARNING: exposing bearer tokens in a config file is not secure, authentication/authorization needs work.
+If we were using lightspeed as the agent, this would be simpler as it lives in the same browser context.
+
+== Using Claude Code
+
+Copy the mcp.json configuration to `<claude-project>/.mcp.json`.
+Start claude and use the `/mcp` command to verify it is connected.
+
+== Using Lightspeed
+
+TO BE DONE.

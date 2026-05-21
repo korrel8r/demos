@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-app
+  namespace: app-to-infra
+  labels:
+    app: bad-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bad-app
+  template:
+    metadata:
+      labels:
+        app: bad-app
+    spec:
+      containers:
+        - name: bad-app
+          image: quay.io/korrel8r/bad-app:latest
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: "2"
+              memory: 64Mi
