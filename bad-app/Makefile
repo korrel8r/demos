@@ -20,3 +20,11 @@ undeploy:
 
 logs:
 	kubectl -n $(NAMESPACE) logs -l app=bad-app -f
+
+URL=$(shell oc whoami --show-console)/k8s/ns/app-to-infra/deployments/bad-app
+url:
+	@echo $(URL)
+
+browse: deploy
+	@xdg-open $(URL)
+	@sleep 1											# xdg-open bug
