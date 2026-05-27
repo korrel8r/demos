@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bad-app
-  namespace: app-to-infra
+  namespace: default
   labels:
     app: bad-app
 spec:
