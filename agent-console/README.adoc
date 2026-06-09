@@ -103,3 +103,6 @@ Start claude and use the `/mcp` command to verify it is connected.
 == Using Lightspeed
 
 TO BE DONE.
+
+== Demo tools
+Prepared with Kooha and Shotcut on Fedora.
