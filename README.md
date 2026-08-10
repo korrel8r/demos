@@ -2,7 +2,7 @@
 
 Latest demo (pre-release):
 
-- [Agent-Console interaction](https://github.com/korrel8r/demos/raw/refs/heads/main/agent-console/agent-demo.webm)
+- [Agent-Console interaction](https://github.com/korrel8r/demos/raw/refs/heads/main/agent-console/agent-navigation.webm)
 
 Past demos:
 
